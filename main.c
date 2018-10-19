@@ -8,6 +8,8 @@ SDL_Window *window = NULL;
 SDL_Surface* screenSurface = NULL;
 SDL_Surface* playerSurface = NULL;
 
+
+
 void draw(SDL_Window *window) {
 	screenSurface = SDL_GetWindowSurface(window);
 	SDL_FillRect(screenSurface, NULL, SDL_MapRGB( screenSurface->format,0x00,0x00,0x00 ));
@@ -63,15 +65,16 @@ void endProgram() {
 	SDL_Quit();
 }
 
-bool loadMedia() {
-	bool success = true;
-
-	playerSurface = SDL_LoadBMP("assets/player.bmp");		
-	if(playerSurface == NULL) {
-		printf("Could not load image: %s", SDL_GetError());
-		success = false;
+SDL_Surface* loadSurface(const char location[]) {
+	SDL_Surface* surface = SDL_LoadBMP(location);		
+	if(surface == NULL) {
+		printf("Could not load image %s\nerror: %s", location, SDL_GetError());
 	}
-	return true;
+	return surface;
+}
+
+void loadMedia() {
+	playerSurface = loadSurface("assets/player.bmp");
 }
 
 int main(int argc, char* argv[]) {
@@ -79,9 +82,7 @@ int main(int argc, char* argv[]) {
 	if(!init()) {
 		return 1;
 	}	
-	if(!loadMedia()) {
-		return 1;
-	}	
+	loadMedia();
 
 	mainLoop();
 
