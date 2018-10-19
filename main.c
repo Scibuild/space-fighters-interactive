@@ -7,13 +7,22 @@
 SDL_Window *window = NULL;
 SDL_Surface* screenSurface = NULL;
 SDL_Surface* playerSurface = NULL;
+SDL_Rect rcPlayer;
+const Uint8* keystate;
 
-
+struct Player {
+	double px, py;
+	double ax, ay;
+	double rot;
+} mainPlayer;
 
 void draw(SDL_Window *window) {
+	rcPlayer.x = mainPlayer.px;
+	rcPlayer.y = mainPlayer.py;
+
 	screenSurface = SDL_GetWindowSurface(window);
 	SDL_FillRect(screenSurface, NULL, SDL_MapRGB( screenSurface->format,0x00,0x00,0x00 ));
-	SDL_BlitSurface(playerSurface, NULL, screenSurface, NULL);
+	SDL_BlitSurface(playerSurface, NULL, screenSurface, &rcPlayer);
 	SDL_UpdateWindowSurface(window);
 }
 
@@ -37,6 +46,8 @@ bool init() {
 		printf("Could not initialize window: %s", SDL_GetError());
 		return false;
 	}
+
+	keystate = SDL_GetKeyboardState(NULL);
 	return true;
 }
 
@@ -46,14 +57,32 @@ void mainLoop() {
 
 	while(running) {
 
-		draw(window);
+		SDL_PumpEvents();
 		
-		while(SDL_PollEvent(&event)) {
-			if(event.type == SDL_QUIT) {
-				running = false;
-			}
+		if(SDL_QuitRequested()) {
+			running = false;
 		}
+		if(keystate[ SDL_SCANCODE_UP] ) {
+			mainPlayer.px += cos(mainPlayer.rot);
+			mainPlayer.py += sin(mainPlayer.rot);
+		}
+
+		if( keystate[SDL_SCANCODE_DOWN] ) {
+			mainPlayer.px -= cos(mainPlayer.rot);
+			mainPlayer.py -= sin(mainPlayer.rot);
+		}
+
+		if( keystate[SDL_SCANCODE_LEFT] ) {
+			mainPlayer.rot += 0.1;
+		}
+
+		if( keystate[SDL_SCANCODE_RIGHT] ) {
+			mainPlayer.rot -= 0.1;
+		}
+
+		draw(window);
 	}
+
 }
 
 void endProgram() {
