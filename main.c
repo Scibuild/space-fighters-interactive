@@ -4,8 +4,10 @@
 #include <stdbool.h>
 #include "main.h"
 
-void draw() {
-
+void draw(SDL_Window *window) {
+	SDL_Surface* screenSurface = SDL_GetWindowSurface(window);
+	SDL_FillRect(screenSurface, NULL, SDL_MapRGB( screenSurface->format,0x00,0xFF,0x00 ));
+	SDL_UpdateWindowSurface(window);
 }
 
 
@@ -36,7 +38,7 @@ int main(int argc, char* argv[]) {
 	
 	while(running) {
 
-		draw();
+		draw(window);
 		
 		while(SDL_PollEvent(&event)) {
 			if(event.type == SDL_QUIT) {
