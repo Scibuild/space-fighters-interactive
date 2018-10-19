@@ -4,21 +4,21 @@
 #include <stdbool.h>
 #include "main.h"
 
+SDL_Window *window = NULL;
+SDL_Surface* screenSurface = NULL;
+SDL_Surface* playerSurface = NULL;
+
 void draw(SDL_Window *window) {
-	SDL_Surface* screenSurface = SDL_GetWindowSurface(window);
+	screenSurface = SDL_GetWindowSurface(window);
 	SDL_FillRect(screenSurface, NULL, SDL_MapRGB( screenSurface->format,0x00,0xFF,0x00 ));
 	SDL_UpdateWindowSurface(window);
 }
 
-
-int main(int argc, char* argv[]) {
-	bool running = true;
-	SDL_Event event;
-	SDL_Window *window;
-
+bool init() {
+	
 	if(SDL_Init(SDL_INIT_VIDEO) != 0) {
 		printf("Could not initialize SDL: %s", SDL_GetError());
-		return 1;
+		return true;
 	}
 
 	window = SDL_CreateWindow(
@@ -32,10 +32,15 @@ int main(int argc, char* argv[]) {
 
 	if(window == NULL) {
 		printf("Could not initialize window: %s", SDL_GetError());
-		return 1;
+		return true;
 	}
-	
-	
+	return false;
+}
+
+void mainLoop() {
+	bool running = true;
+	SDL_Event event;
+
 	while(running) {
 
 		draw(window);
@@ -46,12 +51,25 @@ int main(int argc, char* argv[]) {
 			}
 		}
 	}
+}
+
+void endProgram() {
 
 	SDL_DestroyWindow(window);
-
 	SDL_Quit();
+}
+
+int main(int argc, char* argv[]) {
+
+	if(init()) {
+		return 1;
+	}	
+
+	mainLoop();
+
+	endProgram();
 	
-	printf("Hello, world\n");
+	
 	return 0;
 }
 
