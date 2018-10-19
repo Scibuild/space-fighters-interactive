@@ -10,7 +10,8 @@ SDL_Surface* playerSurface = NULL;
 
 void draw(SDL_Window *window) {
 	screenSurface = SDL_GetWindowSurface(window);
-	SDL_FillRect(screenSurface, NULL, SDL_MapRGB( screenSurface->format,0x00,0xFF,0x00 ));
+	SDL_FillRect(screenSurface, NULL, SDL_MapRGB( screenSurface->format,0x00,0x00,0x00 ));
+	SDL_BlitSurface(playerSurface, NULL, screenSurface, NULL);
 	SDL_UpdateWindowSurface(window);
 }
 
@@ -18,7 +19,7 @@ bool init() {
 	
 	if(SDL_Init(SDL_INIT_VIDEO) != 0) {
 		printf("Could not initialize SDL: %s", SDL_GetError());
-		return true;
+		return false;
 	}
 
 	window = SDL_CreateWindow(
@@ -27,14 +28,14 @@ bool init() {
 			SDL_WINDOWPOS_UNDEFINED,
 			640,
 			480,
-			SDL_WINDOW_OPENGL
+			SDL_WINDOW_SHOWN
 			);
 
 	if(window == NULL) {
 		printf("Could not initialize window: %s", SDL_GetError());
-		return true;
+		return false;
 	}
-	return false;
+	return true;
 }
 
 void mainLoop() {
@@ -55,13 +56,30 @@ void mainLoop() {
 
 void endProgram() {
 
+	SDL_FreeSurface(playerSurface);
+	playerSurface = NULL;
 	SDL_DestroyWindow(window);
+	window = NULL;
 	SDL_Quit();
+}
+
+bool loadMedia() {
+	bool success = true;
+
+	playerSurface = SDL_LoadBMP("assets/player.bmp");		
+	if(playerSurface == NULL) {
+		printf("Could not load image: %s", SDL_GetError());
+		success = false;
+	}
+	return true;
 }
 
 int main(int argc, char* argv[]) {
 
-	if(init()) {
+	if(!init()) {
+		return 1;
+	}	
+	if(!loadMedia()) {
 		return 1;
 	}	
 
