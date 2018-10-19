@@ -2,9 +2,9 @@ CC=gcc
 ODIR=./build
 LINKERFLAG=-lSDL2
 
-.PHONY: all clean
+.PHONY: all 
 
-all: space-fighters
+all: clean space-fighters
 
 space-fighters: 
 	${CC} main.c -o $@ ${LINKERFLAG}
